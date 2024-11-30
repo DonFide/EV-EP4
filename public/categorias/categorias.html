@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Categorías</title>
+    <link rel="stylesheet" href="../styles/principal.css">
+    <link rel="stylesheet" href="../styles/alertDelete.css">
+</head>
+<body>
+
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+
+    <main>
+        <section class="main-header">
+            <h1>Gestión de Categorías</h1>
+        
+            <div class="header-content">
+             
+                <a href="./crear-categoria.html" class="create">Crear Categoría</a>
+            </div>
+        </section>
+
+        <div class="table-container">
+            <table id="listado-categorias" class="list">
+                <thead class="table-head">
+                    <th>No.</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </thead>
+                <tbody class="table-row" id="categoria-tbody">
+                    
+                </tbody>
+            </table>
+        </div>
+    </main>
+    
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+    </div>
+
+    <script>
+        /*logica front-end*/
+        // Cargar los datos de los clientes al cargar la página
+
+    async function cargarCategorias() {
+        try {
+            const response = await fetch('http://localhost:3030/api/categoria/listar');
+            if (!response.ok) throw new Error('Error al obtener las categorias');
+            const data = await response.json();
+            const categoria = data.categoria;
+            console.log(categoria);
+            const tbody = document.getElementById('categoria-tbody');
+
+            if (categoria.length === 0) {
+            tbody.innerHTML = '';
+            return;
+            }
+
+            tbody.innerHTML = ''; 
+            categoria.forEach((categoria, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${categoria.nombre}</td>
+                    <td>${categoria.descripcion}</td>        
+                    <td>
+                        <button class="edit-row" onclick="actualizarCategoria('${categoria._id}')">
+                            <svg fill="white" width="20" height="20" viewBox="0 0 24 24"> 
+                                <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                            </svg>
+                        </button>
+                        <button class="delete-row" onclick="eliminarCategoria('${categoria._id}')">
+                            <svg fill="white" width="20" height="20"viewBox="0 0 24 24">
+                                <path d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    window.onload = cargarCategorias;
+
+    function actualizarCategoria(id) {
+        window.location.href = `./actualizarCategorias.html?id=${id}`;
+        // Implementar lógica de actualización
+    }
+
+    async function eliminarCategoria(id) {
+        if (confirm(`¿Estás seguro de que deseas eliminar esta categoria?`)) {
+        try {
+            const response = await fetch(`http://localhost:3030/api/categoria/eliminar/${id}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) throw new Error('Error al eliminar la categoria');
+            
+            const data = await response.json();
+            alert(data.mensaje); 
+            
+            await cargarCategorias(); 
+        } catch (error) {
+            console.error(error);
+            alert('Error al intentar eliminar la categoria');
+        }
+    }
+    }
+    </script>
+
+
+    <script src="../scripts/alertEliminar.js"></script>
+</body>
+</html>

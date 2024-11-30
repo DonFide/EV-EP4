@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Órdenes</title>
+    <link rel="stylesheet" href="../styles/crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+</head>
+<body>
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+
+    <main>
+        <section class="main-header">
+            <h1>Órden</h1>
+        </section>
+
+        <form class="create-form" id="form-actualizar">
+            <div class="form-group"> 
+                <input class="show-id" type="hidden" id="id" name="id"
+                    readonly>
+            </div>
+            <div class="form-group">
+                <label for="name">ID de mesa</label>
+                <input class="input" type="number" id="name" name="name"  
+                readonly>
+            </div>
+            <div class="form-group">
+                <label for="platillos">Platillos:</label>
+                <ul id="platillos-list"> 
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="estado">Estado</label>
+                <input class="input" type="text" id="estado" name="estado"  
+                readonly>
+            </div>
+
+          
+            <div class="form-actions"> 
+                <a href="./ordenes.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+        
+        <div class="boton-cerrar">
+            <button id="cerrar-alert" class="cerrar-alert"><a href="#">Cerrar</a></button>
+        </div>
+    </div>
+
+    <script> 
+        const urlParams = new URLSearchParams(window.location.search);
+        const idmesa = urlParams.get('id'); 
+        async function cargarDatosOrden() {
+            try {
+                const response = await fetch(`http://localhost:3030/api/orden/buscarMesa/${idmesa}`);
+                if (!response.ok) throw new Error('Error al obtener los datos de la orden');
+                const data = await response.json();
+                const orden = data.orden
+
+                document.getElementById('id').value = orden._id;
+                document.getElementById('name').value = orden.idmesa;   
+
+                document.getElementById('estado').value=orden.estado ; 
+
+                  
+                const platillosList = document.getElementById('platillos-list');
+                platillosList.innerHTML = '';
+
+                orden.platillos.forEach((item) => {
+                    const li = document.createElement('li');
+                    li.textContent = `Platillo: ${item.platillo.nombre} | Cantidad: ${item.cantidad}`;
+                    platillosList.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error(error);
+            }
+            }
+ 
+        window.onload = cargarDatosOrden;
+ 
+      
+    </script>
+
+    <script src="/scripts/validaciones.js"></script>
+</body>
+</html>

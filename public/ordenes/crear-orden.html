@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear orden</title>
+    <link rel="stylesheet" href="../styles/crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+</head>
+<body>
+
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+
+    <main>
+        <section class="main-header">
+            <h1>Crear Orden</h1>
+        </section>
+
+        <form class="create-form" id="OrdenForm">
+            <div class="form-group">
+                <label for="name">ID de mesa</label>
+                <input class="input" type="text" id="idmesa" name="mesa" placeholder="Ingrese el id de la mesa"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="platillos">Platillos solicitados:</label>
+                <div id="platillos-container">
+                </div>
+                <button type="button" class="save-button"onclick="agregarPlatillo()">Agregar Platillo</button>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="save-button">Guardar</button>
+                <a href="./ordenes.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+    
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+        
+        <div class="boton-cerrar">
+            <button id="cerrar-alert" class="cerrar-alert"><a href="#">Cerrar</a></button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('OrdenForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+  
+        const idmesa = document.getElementById('idmesa').value;
+        const platillosContainer = document.getElementById('platillos-container');
+  
+
+        const platillos = Array.from(platillosContainer.getElementsByClassName('platillo-item')).map(item => {
+        const platilloId = item.querySelector('input[name="platillo-id"]').value;
+        const platilloCantidad = item.querySelector('input[name="platillo-cantidad"]').value;
+        return {
+            platillo: platilloId,
+            cantidad: parseInt(platilloCantidad),
+        };
+        });
+
+        fetch('http://localhost:3030/api/orden/crear', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ idmesa,platillos })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Error al guardar la orden');
+          return response.json();
+        })
+        .then(data => {
+          console.log('Orden guardado:', data);
+          window.location.href = 'ordenes.html';
+        })
+        .catch(error => console.error('Error:', error));
+      });
+
+      function agregarPlatillo() {
+        const container = document.getElementById('platillos-container');
+
+        const div = document.createElement('div');
+        div.classList.add('platillo-item');
+
+        div.innerHTML = `
+            <input class="input" type="text" placeholder="ID del platillo" name="platillo-id" required>
+            <input class="input" type="number" placeholder="Cantidad" name="platillo-cantidad" min="1" required>
+            <button type="button" onclick="eliminarPlatillo(this)">Eliminar</button>
+        `;
+
+        container.appendChild(div);
+    }
+
+    function eliminarPlatillo(button) {
+        button.parentElement.remove();
+    }
+
+      </script>
+
+    <script src="../scripts/validaciones.js"></script>
+</body>
+</html>

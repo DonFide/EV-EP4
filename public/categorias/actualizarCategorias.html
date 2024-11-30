@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Categorías</title>
+    <link rel="stylesheet" href="../styles//crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+</head>
+<body>
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+
+    <main>
+        <section class="main-header">
+            <h1>Actualizar Categoría</h1>
+        </section>  
+
+        <form id="form-actualizar" class="create-form">
+            <div class="form-group">
+                <label for="id">Código:</label>
+                <input class="show-id" type="hidden" id="id" name="id"
+                    readonly>
+            </div>
+            <div class="form-group">
+                <label for="name">Nombre:</label>
+                <input class="input" type="text" id="name" name="name" required placeholder="Ingrese el nombre de la categoría">
+            </div>
+            <div class="form-group">
+                <label for="description">Descripción:</label>
+                <textarea id="description" name="description" placeholder="Ingrese la descripción de la categoría"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="state">Estado:</label>
+                <input id="state" name="state" type="checkbox"> Activo
+            </div>
+            
+
+            <div class="form-actions">
+                <button id="form-button" type="submit" class="save-button">Actualizar</button>
+                <a href="./categorias.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+        
+        <div class="boton-cerrar">
+            <button id="cerrar-alert" class="cerrar-alert"><a href="#">Cerrar</a></button>
+        </div>
+    </div>
+
+    <script>
+        // Capturar el ID del cliente desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        //console.log(idCliente)
+        async function cargarDatosCategoria() {
+            try {
+                const response = await fetch(`http://localhost:3030/api/categoria/buscar/${id}`);
+                if (!response.ok) throw new Error('Error al obtener los datos de categoria');
+                const data = await response.json();
+                const categoria = data.categoria
+                // Rellenar los campos del formulario con los datos del cliente
+                document.getElementById('id').value = id;
+                document.getElementById('name').value = categoria.nombre;
+                document.getElementById('description').value = categoria.descripcion;
+                document.getElementById('state').checked = categoria.estado;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Llamar a la función al cargar la página
+        window.onload = cargarDatosCategoria;
+
+        // Función para actualizar el cliente
+        document.getElementById('form-actualizar').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const categoriaActualizado = {
+                nombre: document.getElementById('name').value,
+                descripcion: document.getElementById('description').value,
+                estado: document.getElementById('state').checked
+            };
+            try {
+                console.log("codigo id del cliente probando: ",id);
+                const response = await fetch(`http://localhost:3030/api/categoria/actualizar/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(categoriaActualizado),
+                });
+
+                if (!response.ok) throw new Error('Error al actualizar la categoria');
+                alert('categoria actualizado correctamente');
+                window.location.href = './categorias.html'; 
+            } catch (error) {
+                console.error(error);
+                alert('Error al actualizar la categoria');
+            }
+        });
+    </script>
+
+    <script src="../scripts/validaciones.js"></script>
+    
+</body>
+</html>

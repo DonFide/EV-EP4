@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Clientes</title>
+    <link rel="stylesheet" href="../styles/crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+
+</head>
+<body>
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+
+    <main>
+        <section class="main-header">
+            <h1>Actualizar Cliente</h1>
+        </section>
+
+        <form class="create-form" id="form-actualizar">
+            <div class="form-group">
+                <label for="id">Código:</label>
+                <input class="show-id" type="hidden" id="id" name="id">
+            </div>
+            <div class="form-group">
+                <label for="name">Nombre del cliente:</label>
+                <input class="input" type="text" id="name" name="name" placeholder="Ingrese el nombre del cliente"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="email">Correo electrónico:</label>
+                <input class="input" type="email" id="email" name="email" placeholder="ejemplo@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <label for="phone-number">Número telefónico</label>
+                <input class="input" type="number" id="phone-number" name="phone-number" placeholder="+51..." required>
+            </div>
+            <div class="form-group">
+                <label for="dni">DNI</label>
+                <input class="input" type="number" id="dni" name="dni" placeholder="Ingrese su DNI" required>
+            </div>
+            <div class="form-group">
+                <label for="state">Estado:</label>
+                <input id="state" name="state" type="checkbox"> Activo</input>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="save-button">Guardar</button>
+                <a href="../clientes/clientes.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+        
+        <div class="boton-cerrar">
+            <button id="cerrar-alert" class="cerrar-alert"><a href="#">Cerrar</a></button>
+        </div>
+    </div>
+
+    <script>
+        // Capturar el ID del cliente desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const idCliente = urlParams.get('id');
+        //console.log(idCliente)
+        // Función para cargar los datos del cliente por su ID
+        async function cargarDatosCliente() {
+            try {
+                const response = await fetch(`http://localhost:3030/api/cliente/${idCliente}`);
+                if (!response.ok) throw new Error('Error al obtener los datos del cliente');
+                const data = await response.json();
+                const cliente = data.cliente
+                // Rellenar los campos del formulario con los datos del cliente
+                document.getElementById('id').value = idCliente;
+                document.getElementById('name').value = cliente.nombre;
+                document.getElementById('email').value = cliente.correo;
+                document.getElementById('phone-number').value = cliente.telefono;
+                document.getElementById('dni').value = cliente.dni;
+                document.getElementById('state').checked = cliente.estado
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Llamar a la función al cargar la página
+        window.onload = cargarDatosCliente;
+
+        // Función para actualizar el cliente
+        document.getElementById('form-actualizar').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const clienteActualizado = {
+                nombre: document.getElementById('name').value,
+                correo: document.getElementById('email').value,
+                telefono: document.getElementById('phone-number').value,
+                dni: document.getElementById('dni').value,
+                estado: document.getElementById('state').checked
+            };
+
+            try {
+                console.log("codigo id del cliente probando: ",idCliente);
+                const response = await fetch(`http://localhost:3030/api/cliente/actualizar/${idCliente}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(clienteActualizado),
+                });
+
+                if (!response.ok) throw new Error('Error al actualizar el cliente');
+                alert('Cliente actualizado correctamente');
+                window.location.href = './clientes.html'; // Redirigir al listado de clientes
+            } catch (error) {
+                console.error(error);
+                alert('Error al actualizar el cliente');
+            }
+        });
+    </script>
+
+    <script src="/scripts/validaciones.js"></script>
+</body>
+</html>

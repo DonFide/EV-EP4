@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Categoría</title>
+    <link rel="stylesheet" href="../styles/crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+</head>
+<body>
+    
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+
+    <main>
+        <section class="main-header">
+            <h1>Crear Categoría</h1>
+        </section>
+
+        <form id="categoriaForm" class="create-form">
+            <div class="form-group">
+                <label for="name">Nombre:</label>
+                <input class="input" type="text" id="name" name="nombre" required placeholder="Ingrese el nombre de la categoría">
+            </div>
+            <div class="form-group">
+                <label for="description">Descripción:</label>
+                <textarea id="description" name="descripcion" placeholder="Ingrese la descripción de la categoría"></textarea>
+            </div>
+            <div class="form-actions">
+                <button id="form-button" type="submit" class="save-button">Guardar</button>
+                <a href="./categorias.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+        <div id="alert-container" class="alert-container" style="display: none;">
+            <div class="alerts">
+                <p id="alert-mensaje"></p>
+            </div>
+            <div class="boton-cerrar">
+                <button id="cerrar-alert" class="cerrar-alert">Cerrar</button>
+            </div>
+        </div>
+    
+    <script>
+        document.getElementById('categoriaForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+      
+        const nombre = document.getElementById('name').value;
+        const descripcion = document.getElementById('description').value;
+      
+        fetch('http://localhost:3030/api/categoria/crear', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nombre, descripcion })
+            })
+            .then(response => {
+              if (!response.ok) throw new Error('Error al guardar la categoria');
+              return response.json();
+            })
+            .then(data => {
+              console.log('Categoria guardado:', data);
+              window.location.href = 'categorias.html';
+            })
+            .catch(error => console.error('Error:', error));
+          });
+    </script>
+
+    <script src="../scripts/validaciones.js"></script>
+</body>
+</html>

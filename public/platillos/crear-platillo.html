@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear platillo</title>
+    <link rel="stylesheet" href="../styles/crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+</head>
+
+<body>
+
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+    <main>
+        <section class="main-header">
+            <h1>Crear Platillo</h1>
+        </section>
+
+        <form class="create-form" id="platilloForm">
+            <div class="form-group">
+                <label for="name">Nombre del platillo:</label>
+                <input class="input" type="text" id="name" name="nombre" placeholder="Ingrese el nombre del platillo"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="ingredients">Ingredientes:</label>
+                <textarea id="ingredients" name="ingredientes" placeholder="Ingredientes..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Precio:</label>
+                <input class="input" type="number" id="price" name="precio" placeholder="S/." required>
+            </div>
+            <div class="form-group">
+                <label for="img">Imagen del platillo:</label>
+                <input type="file" id="image" name="imagenes">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="save-button">Guardar</button>
+                <a href="./platillos.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+        
+        <div class="boton-cerrar">
+            <button id="cerrar-alert" class="cerrar-alert"><a href="#">Cerrar</a></button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('platilloForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+  
+        const nombre = document.getElementById('name').value;
+        const ingredientes = document.getElementById('ingredients').value;
+        const precio = document.getElementById('price').value;
+        const imagen = document.getElementById('image').value;
+  
+        fetch('http://localhost:3030/api/platillo/crear', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nombre, ingredientes, precio, imagen })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Error al guardar el platillo');
+          return response.json();
+        })
+        .then(data => {
+          console.log('Platillo guardado:', data);
+          window.location.href = 'platillos.html';
+        })
+        .catch(error => console.error('Error:', error));
+      });
+      </script>
+
+    <script src="../scripts/validaciones.js"></script>
+</body>
+</html>

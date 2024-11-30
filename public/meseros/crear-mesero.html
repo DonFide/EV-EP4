@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Mesero</title>
+    <link rel="stylesheet" href="../styles/crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+
+</head>
+<body>
+    
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+
+    <main>
+        <section class="main-header">
+            <h1>Crear Mesero</h1>
+        </section>
+
+        <form class="create-form" id="meseroForm">
+            <div class="form-group">
+                <label for="name">Nombre del mesero:</label>
+                <input class="input" type="text" id="name" name="nombre" placeholder="Ingrese el nombre del mesero"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="dni">DNI:</label>
+                <input class="input" type="text" id="dni" name="dni" placeholder="Ingrese el DNI del mesero" required>
+            </div>
+            <div class="form-group">
+                <label for="phone-number">Número telefónico:</label>
+                <input class="input" type="text" id="phone-number" name="telefono" placeholder="+51..." required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input class="input" type="password" id="password" name="password" placeholder="Ingrese la contraseña" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="save-button">Guardar</button>
+                <a href="./meseros.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+    
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+        
+        <div class="boton-cerrar">
+            <button id="cerrar-alert" class="cerrar-alert"><a href="#">Cerrar</a></button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('meseroForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+  
+        const nombre = document.getElementById('name').value;
+        const telefono = document.getElementById('phone-number').value;
+        const dni = document.getElementById('dni').value;
+        const password = document.getElementById('password').value;
+  
+        fetch('http://localhost:3030/api/mesero/crear', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nombre, telefono, dni, password })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Error al guardar el mesero');
+          return response.json();
+        })
+        .then(data => {
+          console.log('Mesero guardado:', data);
+          window.location.href = 'meseros.html';
+        })
+        .catch(error => console.error('Error:', error));
+      });
+  
+      </script>
+
+    <script src="../scripts/validaciones.js"></script>
+</body>
+</html>

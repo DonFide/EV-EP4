@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Platillos</title>
+    <link rel="stylesheet" href="../styles/crear.css">
+    <link rel="stylesheet" href="../styles/alerts.css">
+</head>
+<body>
+    <sidebar class="side-container">
+        <article class="title-container">
+            <h1 class="side-title">MENÚ PRINCIPAL</h1>
+        </article>
+        <div class="side-list">
+            <a href="../platillos/platillos.html" class="side-module">Platillos</a>
+            <a href="../clientes/clientes.html" class="side-module">Clientes</a>
+            <a href="../ordenes/ordenes.html" class="side-module">Órdenes</a>
+            <a href="../categorias/categorias.html" class="side-module">Categorías</a>
+            <a href="../meseros/meseros.html" class="side-module">Meseros</a>
+        </div>
+    </sidebar>
+    <main>
+        <section class="main-header">
+            <h1>Platillo</h1>
+        </section>
+
+        <form class="create-form" id="form-actualizar">
+            <div class="form-group"> 
+                <input class="show-id" type="hidden" id="id" name="id"
+                    readonly>
+            </div>
+            <div class="form-group">
+                <label for="name">Nombre del platillo:</label>
+                <input class="input" type="text" id="name" name="name" placeholder="Ingrese el nombre del platillo"
+                readonly>
+            </div>
+            <div class="form-group">
+                <label for="ingredients">Ingredientes:</label>
+                <textarea id="ingredients" name="ingredients" placeholder="Ingredientes..." readonly></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Precio:</label>
+                <input class="input" type="number" id="price" name="price" placeholder="S/." readonly>
+            </div>
+            <div class="form-group">
+                <label for="img">Imagen del platillo:</label>
+                <input type="file" id="image" name="image" readonly>
+            </div>
+           
+            <div class="form-actions"> 
+                <a href="./platillos.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+    <div id="alert-container" class="alert-container">
+        <div class="alerts">
+            <p id="alert-mensaje"></p>
+        </div>
+        
+        <div class="boton-cerrar">
+            <button id="cerrar-alert" class="cerrar-alert"><a href="#">Cerrar</a></button>
+        </div>
+    </div>
+
+    <script>
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const idPlatillo = urlParams.get('id');
+
+        async function cargarDatosPlatillos() {
+            try {
+                const response = await fetch(`http://localhost:3030/api/platillo/buscar/${idPlatillo}`);
+                if (!response.ok) throw new Error('Error al obtener los datos del cliente');
+                const data = await response.json();
+                const platillo = data.platillo
+
+                document.getElementById('id').value = idPlatillo;
+                document.getElementById('name').value = platillo.nombre;
+                document.getElementById('ingredients').value = platillo.ingredientes;
+                document.getElementById('price').value = platillo.precio;
+                document.getElementById('image').value = platillo.imagen;
+                document.getElementById('state').checked = platillo.estado
+            } catch (error) {
+                console.error(error);
+            }
+        }
+ 
+        window.onload = cargarDatosPlatillos;
+
+         
+    </script>
+
+    <script src="../scripts/validaciones.js"></script>
+</body>
+</html>
